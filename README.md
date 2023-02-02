@@ -15,3 +15,13 @@ npm install
 ```
 npm run dev
 ```
+
+## Test Release
+
+- Create a new branche
+
+- Increment this counter: 1
+
+- commit with conventional commit: fix, feat or feat!
+
+- Push
