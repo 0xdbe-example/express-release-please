@@ -1,0 +1,41 @@
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PRIVATE_KEY: ${{ secrets.GH_APP_PRIVATE_KEY }}
+  APP_ID: 265882
+  GH_APP_INSTALLATION_ID: 31665277
+
+name: release
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: clone repository
+        uses: actions/checkout@v3
+
+      - name: get token for github app installation
+        id: get-token
+        uses: ./.github/actions/github-app-tokens
+        with:
+          gh-app-id: 288902
+          gh-app-installation-id: 33783058
+          gh-app-private-key:  ${{ secrets.GH_APP_PRIVATE_KEY }}
+
+      - name: release
+        id: release
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: node
+          package-name: release-please-action
+          token:  ${{ steps.get-token.outputs.gh-app-installation-token }}
+
+
+    # - name: additional step in case of release
+    #   run: ...
+    #   if: ${{ steps.release.outputs.release_created }}
+

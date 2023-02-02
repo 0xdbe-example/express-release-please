@@ -1,0 +1,50 @@
+name: GitHub App token
+
+description: get access token as github app installation
+
+inputs:
+  gh-app-id:
+    description: identifier of the github app.
+    required: true
+  gh-app-installation-id:
+    description: identifier of the installation for which the token will be requested
+    required: true
+  gh-app-private-key:
+    description: private key of the github app
+    required: true
+
+outputs:
+  gh-app-token:
+    description: token for the github app
+    value: ${{ steps.exchange-app-token-for-installation-token.outputs.gh-app-token }}
+  gh-app-installation-token:
+    description: token for the github app installation
+    value: ${{ steps.exchange-app-token-for-installation-token.outputs.gh-app-installation-token }}
+  
+runs:
+  using: "composite"
+  steps:
+
+    - id: forge-app-token
+      run: |
+        IAT=$(date -d "-1 minutes" +"%s")
+        EXP=$(date -d "+9 minutes" +"%s")
+        HEADER=$(echo -n '{"type": "JWT","alg": "RS256"}' | base64 | tr '+/' '-_' | tr -d '=')
+        PAYLOAD=$(echo -n "{\"iat\": $IAT, \"exp\": $EXP, \"iss\": ${{ inputs.gh-app-id }} }" | base64 | tr '+/' '-_' | tr -d '=')
+        SIGNATURE=$(printf '%s' "${HEADER}.${PAYLOAD}" | \
+                  openssl dgst -sha256 -binary -sign <(printf '%s\n' "${{ inputs.gh-app-private-key }}") | \
+                  base64 -w 0 | \
+                  tr '+/' '-_' | \
+                  tr -d '=';)
+        GH_APP_TOKEN="${HEADER}.${PAYLOAD}.${SIGNATURE}"
+        echo "gh-app-token=$(echo $GH_APP_TOKEN)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - id: exchange-app-token-for-installation-token
+      run: |
+        GH_APP_INSTALLATION_TOKEN=$(curl --location -g -s \
+          --request POST "https://api.github.com/app/installations/${{ inputs.gh-app-installation-id }}/access_tokens" \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --header "Authorization: Bearer ${{ steps.forge-app-token.outputs.gh-app-token }}" | jq .token -r)
+        echo "gh-app-installation-token=$(echo $GH_APP_INSTALLATION_TOKEN)" >> $GITHUB_OUTPUT
+      shell: bash
