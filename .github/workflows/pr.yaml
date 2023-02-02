@@ -1,0 +1,12 @@
+name: verify pull request
+
+on:
+  pull_request
+
+jobs:
+  verify :
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: lint
+        run: npm run lint
