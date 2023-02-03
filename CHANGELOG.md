@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/0xdbe-example/express-release-please/compare/v1.0.1...v1.0.2) (2023-02-03)
+
+
+### Bug Fixes
+
+* bump version ([a04309d](https://github.com/0xdbe-example/express-release-please/commit/a04309d615c7670f64405822380870af71af7090))
+* bump version ([5798940](https://github.com/0xdbe-example/express-release-please/commit/5798940a65fd77c36eda25088a4de0bc855d8c19))
+
 ## [1.0.1](https://github.com/0xdbe-example/express-release-please/compare/v1.0.0...v1.0.1) (2023-02-02)
 
 
