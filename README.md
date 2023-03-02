@@ -20,7 +20,7 @@ npm run dev
 
 - Create a new branche
 
-- Increment this counter: 5
+- Increment this counter: 7
 
 - commit with conventional commit: fix, feat or feat!
 
